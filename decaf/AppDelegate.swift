@@ -42,7 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
-        let toggleScreenItem = NSMenuItem(title: "Use Screen Assertion", action: #selector(toggleScreenAssertion), keyEquivalent: "")
+        let toggleScreenItem = NSMenuItem(title: "Keep screen awake", action: #selector(toggleScreenAssertion), keyEquivalent: "")
         toggleScreenItem.target = self
         toggleScreenItem.image = circularImage(named: "display", isActive: useScreenAssertion)
         menu.addItem(toggleScreenItem)
