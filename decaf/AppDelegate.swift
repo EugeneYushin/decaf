@@ -67,15 +67,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func circularImage(named systemName: String, isActive: Bool, size: NSSize = NSSize(width: 30, height: 30)) -> NSImage? {
-        guard let symbol = NSImage(systemSymbolName: systemName, accessibilityDescription: nil) else {
-            return nil
-        }
-        
-        let config = NSImage.SymbolConfiguration(pointSize: 18, weight: .bold)
-        let boldSymbol = symbol.withSymbolConfiguration(config) ?? symbol
-        boldSymbol.isTemplate = true
-        
+    func circularImage(named systemName: String, isActive: Bool, size: NSSize = NSSize(width: 24, height: 24)) -> NSImage? {
+        // draw circle + background
         let image = NSImage(size: size)
         image.lockFocus()
         
@@ -89,12 +82,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         NSBezierPath(ovalIn: bounds).fill()
         
-        // Set tint color
-        let tintColor: NSColor = isActive ? .white : .black
-        tintColor.set()
+        let symbolRect = bounds.insetBy(dx: 6, dy: 6)
         
-        let symbolRect = bounds.insetBy(dx: 8, dy: 8)
-        boldSymbol.draw(in: symbolRect, from: .zero, operation: .sourceAtop, fraction: 1)
+        let symbolConfig = NSImage.SymbolConfiguration(pointSize: 12, weight: .heavy)
+        if let symbolImage = NSImage(systemSymbolName: systemName, accessibilityDescription: nil)?
+            .withSymbolConfiguration(symbolConfig) {
+
+            // Tint the image white
+            let tintImage = symbolImage.copy() as! NSImage
+            tintImage.isTemplate = false  // Required to respect tint color
+            tintImage.lockFocus()
+            if isActive {
+                NSColor.white.set()
+            } else {
+                NSColor.darkGray.set()
+            }
+            
+            let imageRect = NSRect(origin: .zero, size: tintImage.size)
+            imageRect.fill(using: .sourceAtop)
+            tintImage.unlockFocus()
+
+            // Set the tinted image
+            tintImage.draw(in: symbolRect, from: .zero, operation: .sourceAtop, fraction: 1)
+        }
         
         image.unlockFocus()
         image.isTemplate = false
